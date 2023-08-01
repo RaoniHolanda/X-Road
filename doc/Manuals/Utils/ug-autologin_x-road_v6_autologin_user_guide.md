@@ -11,6 +11,7 @@ Doc. ID: UG-AUTOLOGIN
 | 15.11.2018 | 1.2     | Ubuntu 18.04 updates                                                                              |
 | 11.09.2019 | 1.3     | Remove Ubuntu 14.04 support                                                                       |
 | 26.09.2022 | 1.4     | Remove Ubuntu 18.04 support                                                                       |
+| 01.08.2023 | 1.5     | Tradução e atualizações no texto                                                                  |
 
 ## Table of Contents
 
@@ -25,36 +26,36 @@ Doc. ID: UG-AUTOLOGIN
     
 <!-- tocstop -->
 
-## 1 Introduction
+## 1 Introdução
 
-This document describes the Autologin utility which automatically enters the PIN code after `xroad-signer` has started.
+Este documento descreve o utilitário de Autologin responsável por inserir automaticamente o código PIN após o início do `xroad-signer`.
 
-### 1.1 Terms and abbreviations
+### 1.1 Termos e abreviações
 
-See X-Road terms and abbreviations documentation \[[TA-TERMS](#Ref_TERMS)\].
+Consulte a documentação de termos abreviações X-Via \[[TA-TERMS](#Ref_TERMS)\].
 
-### 1.2 References
+### 1.2 Referências
 
 1. <a id="Ref_TERMS" class="anchor"></a>\[TA-TERMS\] X-Road Terms and Abbreviations. Document ID: [TA-TERMS](../../terms_x-road_docs.md).
 
-## 2 Overview
-### 2.1 Usage
+## 2 Visão geral
+### 2.1 Passo a passo
 
-1. Install the package
+1. Instale o pacote
   * Ubuntu: apt install xroad-autologin
   * RedHat: yum install xroad-autologin
 
-2. If storing the PIN code on the server in plaintext is acceptable, create file `/etc/xroad/autologin` that contains the PIN code. 
-  * File should be readable by user `xroad`
-  * If `/etc/xroad/autologin` does not exists, and you have not implemented `custom-fetch-pin.sh`, the service will not start
-3. If you do not want to store PIN code in plaintext, implement bash script 
+2. Se armazenar o código PIN no servidor em texto simples for aceitável, crie um arquivo `/etc/xroad/autologin` que contenha o código PIN. 
+  * O arquivo deve ser legível pelo usuário `xroad`
+  * Se `/etc/xroad/autologin` não existir e você não tiver implementado `custom-fetch-pin.sh`, o serviço não será iniciado.
+3. Se você não deseja armazenar o código PIN em texto sem formatação, implemente o script bash 
 `/usr/share/xroad/autologin/custom-fetch-pin.sh`
-  * The script needs to output the PIN code to stdout
-  * Script should be readable and executable by user `xroad`
-  * Script should exit with exit code
-    * 0 if it was able to fetch PIN code successfully
-    * 127 if it was not able to fetch PIN code, but this is not an actual error that should cause the service to fail (default implementation uses this if `/etc/xroad/autologin` does not exist)
-    * other exit codes in error situations that should cause the service to fail
+  * O script precisa enviar o código PIN para stdout
+  * O script deve ser legível e executável pelo usuário `xroad`
+  * O script deve sair com o código de saída
+    * 0 se foi capaz de buscar o código PIN com sucesso
+    * 127 se não foi possível buscar o código PIN, mas este não é um erro real que deve causar falha no serviço (a implementação padrão usa isso se `/etc/xroad/autologin` não existir)
+    * outros códigos de saída em situações de erro que devem causar falha no serviço
   ```bash
   #!/bin/bash
   PIN_CODE=$(curl https://some-address)
@@ -62,12 +63,12 @@ See X-Road terms and abbreviations documentation \[[TA-TERMS](#Ref_TERMS)\].
   exit 0
   ```
 
-### 2.2 Implementation details
+### 2.2 Detalhes da implementação
 
-* Creates a new service `xroad-autologin`
-* Service is started after `xroad-signer` has started
-* On RHEL/Ubuntu 20.04, service calls wrapper script `/usr/share/xroad/autologin/xroad-autologin-retry.sh` which in turn calls `autologin.expect`
-  * Wrapper script handles retries in error situations.
-* Service tries to enter the PIN code using script `signer-console`
-  * If the PIN was correct or incorrect, it exits
-  * If an error occurred (for example because `xroad-signer` has not yet fully started), it keeps retrying indefinitely
+* Crie um novo `xroad-autologin`
+* O serviço é iniciado após `xroad-signer`
+* No RHEL/Ubuntu 20.04, o serviço chama o script wrapper `/usr/share/xroad/autologin/xroad-autologin-retry.sh` que, por sua vez, chama o `autologin.expect`
+  * O script wrapper lida com novas tentativas em situações de erro.
+* O serviço tenta inserir o código PIN usando `signer-console`
+  * Se o PIN estiver correto ou incorreto, é retirado
+  * Se ocorre um erro (por exemplo, o `xroad-signer` ainda não foi totalmente iniciado), ele continua tentando fazer o login indefinidamente
