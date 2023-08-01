@@ -1,4 +1,4 @@
-# X-Road: Autologin User Guide
+# X-Road: Guia de Usuário Autologin
 
 Version: 1.4
 Doc. ID: UG-AUTOLOGIN
